@@ -1,37 +1,60 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import CommandRegistry from '../commands/CommandRegistry';
 
 const commandRegistry = new CommandRegistry();
 
 const TerminalContainer = styled.div`
   background-color: #000;
-  color: #0F0;
-  font-family: 'Courier New', Courier, monospace;
+  color: #00B600;
   padding: 20px;
-  height: 100vh;
+  height: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  position: relative;
+`;
+
+const flicker = keyframes`
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+`;
+
+const ScanlineEffect = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 1px,
+    rgba(0, 0, 0, 0.4) 2px
+  );
+  pointer-events: none;
+  animation: ${flicker} 0.15s infinite;
 `;
 
 const OutputArea = styled.div`
   flex-grow: 1;
   overflow-y: auto;
   &::-webkit-scrollbar {
-    width: 8px;
-  }
-  &::-webkit-scrollbar-track {
-    background: #333;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #555;
+    display: none;
   }
 `;
 
 const OutputLine = styled.div`
   white-space: pre-wrap;
   word-wrap: break-word;
+  color: ${(props) => (props.$isCommand ? '#00FF00' : 'inherit')};
 `;
 
 const InputLine = styled.div`
@@ -41,12 +64,14 @@ const InputLine = styled.div`
 
 const Prompt = styled.span`
   margin-right: 10px;
+  font-weight: bold;
+  color: #00FF00;
 `;
 
 const Input = styled.input`
   background: transparent;
   border: none;
-  color: inherit;
+  color: #00FF00;
   font-family: inherit;
   font-size: 1em;
   flex-grow: 1;
@@ -111,7 +136,11 @@ const Terminal = () => {
           setInventory(inventoryResponse.data.inventory);
         }
       } catch (error) {
-        addHistory(error.response?.data?.detail || 'An error occurred.');
+        if (error.response && error.response.data && error.response.data.detail) {
+          addHistory(error.response.data.detail);
+        } else {
+          addHistory('An error occurred.');
+        }
       }
     } else {
       addHistory(`Unknown command: ${command}`);
@@ -180,9 +209,10 @@ const Terminal = () => {
 
   return (
     <TerminalContainer onClick={handleContainerClick}>
+      <ScanlineEffect />
       <OutputArea ref={outputAreaRef}>
         {history.map((line, index) => (
-          <OutputLine key={index}>{line.type === 'command' ? `> ${line.text}` : line.text}</OutputLine>
+          <OutputLine key={index} $isCommand={line.type === 'command'}>{line.type === 'command' ? `> ${line.text}` : line.text}</OutputLine>
         ))}
         <InputLine>
           <Prompt>&gt;</Prompt>

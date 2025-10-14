@@ -9,7 +9,7 @@ const theme = {
     text: '#00FF00',
   },
   fonts: {
-    body: 'Roboto Mono, monospace',
+    body: 'VT323, monospace',
   },
 };
 

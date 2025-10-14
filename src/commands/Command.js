@@ -14,7 +14,7 @@ class Command {
   }
 
   updateHistory(response, addHistory) {
-    throw new Error('Not implemented');
+    addHistory(response);
   }
 }
 
