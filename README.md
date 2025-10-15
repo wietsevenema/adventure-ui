@@ -1,16 +1,53 @@
-# React + Vite
+# Adventure UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a web-based user interface for [The Temple of the Forgotten Prompt](https://adventure.wietsevenema.eu/), an interactive text-based adventure game designed for both humans and AI agents. 
 
-Currently, two official plugins are available:
+In The Temple of the Forgotten Prompt, you'll navigate ancient ruins, uncover secrets, and manipulate your environment to progress. You'll need to pay close attention to the descriptions to find clues, collect items, and figure out how to use them to overcome obstacles. 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This UI provides a terminal-like interface for players to interact with the game world.
 
-## React Compiler
+## Prerequisites
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Before you begin, ensure you have [Node.js](https://nodejs.org/) installed on your system.
 
-## Expanding the ESLint configuration
+## Installation
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/wietsevenema/adventure-ui.git
+   ```
+
+2. Navigate to the project directory:
+
+   ```bash
+   cd adventure-ui/web
+   ```
+
+3. Install the dependencies:
+
+   ```bash
+   npm install
+   ```
+
+## Configuration
+
+To run the application, you need to set the `API_KEY` environment variable. You can get an API key from [https://adventure.wietsevenema.eu/game-api](https://adventure.wietsevenema.eu/game-api).
+
+Create a `.env` file in the `web` directory and add the following line:
+
+```
+API_KEY=your-api-key
+```
+
+Replace `your-api-key` with the API key you obtained.
+
+## Running the Development Server
+
+To start the development server, run the following command:
+
+```bash
+npm run dev
+```
+
+This will start the development server and open the application in your default browser.
