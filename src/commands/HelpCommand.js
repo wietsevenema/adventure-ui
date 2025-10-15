@@ -11,7 +11,7 @@ class HelpCommand extends Command {
   }
 
   updateHistory(response, addHistory) {
-    addHistory('Available commands: look, inventory, examine [thing], move [exit], take [item], use [item] on [thing], drop [item], help');
+    addHistory('Available commands: look, examine [thing], move [exit], take [item], help');
   }
 }
 

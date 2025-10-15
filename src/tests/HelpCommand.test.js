@@ -7,6 +7,6 @@ describe('HelpCommand', () => {
     const addHistory = vi.fn();
     command.updateHistory(null, addHistory);
 
-    expect(addHistory).toHaveBeenCalledWith('Available commands: look, inventory, examine [thing], move [exit], take [item], use [item] on [thing], drop [item], help');
+    expect(addHistory).toHaveBeenCalledWith('Available commands: look, examine [thing], move [exit], take [item], help');
   });
 });
