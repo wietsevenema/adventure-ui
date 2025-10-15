@@ -81,9 +81,6 @@ const Input = styled.input`
 const Terminal = () => {
   const [history, setHistory] = useState(() => {
     const initialHistory = ["Welcome to the Temple of the Forgotten Prompt!"];
-    if (!localStorage.getItem('apiKey')) {
-      initialHistory.push("Use the 'apikey set <key>' command to set your API key.");
-    }
     return initialHistory.map(text => ({ text, type: 'response' }));
   });
   const [input, setInput] = useState('');
