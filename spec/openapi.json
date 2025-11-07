@@ -14,7 +14,7 @@
     "/game/look": {
       "get": {
         "summary": "Look",
-        "description": "Get the player's current location.\n\nReturns the current room, including its description, items, and exits.",
+        "description": "Get the player's current location.\n\nReturns the current room, including its description.",
         "operationId": "look",
         "responses": {
           "200": {
@@ -292,15 +292,15 @@
     "schemas": {
       "DropRequest": {
         "properties": {
-          "itemName": {
+          "item_name": {
             "type": "string",
-            "title": "Itemname",
+            "title": "Item Name",
             "description": "The name of the item to drop from the inventory."
           }
         },
         "type": "object",
         "required": [
-          "itemName"
+          "item_name"
         ],
         "title": "DropRequest"
       },
@@ -397,15 +397,15 @@
       },
       "MoveRequest": {
         "properties": {
-          "exit": {
+          "exit_name": {
             "type": "string",
-            "title": "Exit",
+            "title": "Exit Name",
             "description": "The name of the exit to use."
           }
         },
         "type": "object",
         "required": [
-          "exit"
+          "exit_name"
         ],
         "title": "MoveRequest"
       },
@@ -418,22 +418,6 @@
           "description": {
             "type": "string",
             "title": "Description"
-          },
-          "items": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Items",
-            "default": []
-          },
-          "exits": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Exits",
-            "default": []
           }
         },
         "type": "object",
@@ -445,15 +429,15 @@
       },
       "TakeRequest": {
         "properties": {
-          "itemName": {
+          "item_name": {
             "type": "string",
-            "title": "Itemname",
+            "title": "Item Name",
             "description": "The name of the item to take from the current room."
           }
         },
         "type": "object",
         "required": [
-          "itemName"
+          "item_name"
         ],
         "title": "TakeRequest"
       },
@@ -482,7 +466,7 @@
           "direct_object": {
             "type": "string",
             "title": "Direct Object",
-            "description": "The identifier of the direct object. An object can be an item in your inventory, an item in the room, or an exit."
+            "description": "The name of the direct object. An object can be an item in your inventory, an item in the room, or an exit."
           },
           "indirect_object": {
             "anyOf": [
@@ -494,7 +478,7 @@
               }
             ],
             "title": "Indirect Object",
-            "description": "The identifier of the indirect object. If provided, the game attempts to use `direct_object` and `indirect_object` on each other."
+            "description": "The name of the indirect object. If provided, the game attempts to use `direct_object` and `indirect_object` on each other."
           }
         },
         "type": "object",
