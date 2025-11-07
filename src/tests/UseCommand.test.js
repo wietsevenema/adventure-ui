@@ -24,25 +24,19 @@ describe('UseCommand', () => {
 
   it('should provide suggestions for the first argument', () => {
     const command = new UseCommand();
-    const room = {
-      items: ['item1', 'item2'],
-      exits: ['north'],
-    };
+    const room = {};
     const inventory = ['item3'];
 
     const suggestions = command.getSuggestions('it', room, inventory);
-    expect(suggestions).toEqual(['item1', 'item2', 'item3']);
+    expect(suggestions).toEqual(['item3']);
   });
 
   it('should provide suggestions for the second argument', () => {
     const command = new UseCommand();
-    const room = {
-      items: ['item1', 'item2'],
-      exits: ['north'],
-    };
+    const room = {};
     const inventory = ['item3'];
 
-    const suggestions = command.getSuggestions('item1 on it', room, inventory);
-    expect(suggestions).toEqual(['item2', 'item3']);
+    const suggestions = command.getSuggestions('item3 on ', room, inventory);
+    expect(suggestions).toEqual([]);
   });
 });

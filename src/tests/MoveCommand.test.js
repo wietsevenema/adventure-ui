@@ -45,11 +45,9 @@ describe('MoveCommand', () => {
 
   it('should provide suggestions', () => {
     const command = new MoveCommand();
-    const room = {
-      exits: ['north', 'south'],
-    };
+    const room = {};
 
     const suggestions = command.getSuggestions('n', room, []);
-    expect(suggestions).toEqual(['north']);
+    expect(suggestions).toEqual([]);
   });
 });

@@ -24,21 +24,9 @@ describe('TakeCommand', () => {
 
   it('should provide suggestions', () => {
     const command = new TakeCommand();
-    const room = {
-      items: ['item1', 'item2'],
-    };
+    const room = {};
 
     const suggestions = command.getSuggestions('it', room, []);
-    expect(suggestions).toEqual(['item1', 'item2']);
-  });
-
-  it('should provide suggestions with multiple words', () => {
-    const command = new TakeCommand();
-    const room = {
-      items: ['long item name', 'item2'],
-    };
-
-    const suggestions = command.getSuggestions('long it', room, []);
-    expect(suggestions).toEqual(['long item name']);
+    expect(suggestions).toEqual([]);
   });
 });

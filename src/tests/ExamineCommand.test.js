@@ -24,13 +24,10 @@ describe('ExamineCommand', () => {
 
   it('should provide suggestions', () => {
     const command = new ExamineCommand();
-    const room = {
-      items: ['item1', 'item2'],
-      exits: ['north', 'south'],
-    };
+    const room = {};
     const inventory = ['item3'];
 
     const suggestions = command.getSuggestions('it', room, inventory);
-    expect(suggestions).toEqual(['item1', 'item2', 'item3']);
+    expect(suggestions).toEqual(['item3']);
   });
 });

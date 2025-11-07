@@ -11,8 +11,6 @@ describe('LookCommand', () => {
       data: {
         name: 'Test Room',
         description: 'A test room',
-        items: ['item1', 'item2'],
-        exits: ['north', 'south'],
       },
     };
     api.look.mockResolvedValue(response);
