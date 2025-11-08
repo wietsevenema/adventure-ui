@@ -8,7 +8,7 @@ class UseCommand extends Command {
 
   async execute(args) {
     const [direct, indirect] = args.split(' on ');
-    return await api.use(direct, indirect);
+    return await api.use(direct.trim(), indirect ? indirect.trim() : undefined);
   }
 
   updateHistory(response, addHistory) {
