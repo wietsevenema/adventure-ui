@@ -84,6 +84,7 @@ const Terminal = () => {
     return initialHistory.map(text => ({ text, type: 'response' }));
   });
   const [input, setInput] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
   const [room, setRoom] = useState(null);
   const [inventory, setInventory] = useState([]);
   const [suggestionIndex, setSuggestionIndex] = useState(0);
@@ -99,10 +100,15 @@ const Terminal = () => {
   }, [history]);
 
   const initGame = async () => {
-    const lookResponse = await import('../api/ApiService').then(api => api.look());
-    setRoom(lookResponse.data);
-    const inventoryResponse = await import('../api/ApiService').then(api => api.inventory());
-    setInventory(inventoryResponse.data.inventory);
+    setIsProcessing(true);
+    try {
+      const lookResponse = await import('../api/ApiService').then(api => api.look());
+      setRoom(lookResponse.data);
+      const inventoryResponse = await import('../api/ApiService').then(api => api.inventory());
+      setInventory(inventoryResponse.data.inventory);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   useEffect(() => {
@@ -122,6 +128,7 @@ const Terminal = () => {
     const commandInstance = commandRegistry.get(cmd);
 
     if (commandInstance) {
+      setIsProcessing(true);
       try {
         const response = await commandInstance.execute(argString);
         commandInstance.updateHistory(response, addHistory);
@@ -138,6 +145,8 @@ const Terminal = () => {
         } else {
           addHistory('An error occurred.');
         }
+      } finally {
+        setIsProcessing(false);
       }
     } else {
       addHistory(`Unknown command: ${command}`);
@@ -152,6 +161,7 @@ const Terminal = () => {
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
+      if (isProcessing) return;
       addHistory(input, 'command');
       processCommand(input);
       setInput('');
@@ -212,7 +222,7 @@ const Terminal = () => {
           <OutputLine key={index} $isCommand={line.type === 'command'}>{line.type === 'command' ? `> ${line.text}` : line.text}</OutputLine>
         ))}
         <InputLine>
-          <Prompt>&gt;</Prompt>
+          {!isProcessing && <Prompt>&gt;</Prompt>}
           <Input
             ref={inputRef}
             type="text"
