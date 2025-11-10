@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
-import CommandRegistry from '../commands/CommandRegistry';
-
-const commandRegistry = new CommandRegistry();
+import { useTerminal } from '../hooks/useTerminal.jsx';
 
 const TerminalContainer = styled.div`
   background-color: #000;
@@ -79,18 +77,15 @@ const Input = styled.input`
 `;
 
 const Terminal = () => {
-  const [history, setHistory] = useState(() => {
-    const initialHistory = ["Welcome to the Temple of the Forgotten Prompt!"];
-    return initialHistory.map(text => ({ text, type: 'response' }));
-  });
-  const [input, setInput] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [room, setRoom] = useState(null);
-  const [inventory, setInventory] = useState([]);
-  const [suggestionIndex, setSuggestionIndex] = useState(0);
-  const [currentSuggestions, setCurrentSuggestions] = useState([]);
-  const outputAreaRef = useRef(null);
+  const {
+    history,
+    input,
+    isProcessing,
+    handleInputChange,
+    handleKeyDown,
+  } = useTerminal();
 
+  const outputAreaRef = useRef(null);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -98,115 +93,6 @@ const Terminal = () => {
       outputAreaRef.current.scrollTop = outputAreaRef.current.scrollHeight;
     }
   }, [history]);
-
-  const initGame = async () => {
-    setIsProcessing(true);
-    try {
-      const lookResponse = await import('../api/ApiService').then(api => api.look());
-      setRoom(lookResponse.data);
-      const inventoryResponse = await import('../api/ApiService').then(api => api.inventory());
-      setInventory(inventoryResponse.data.inventory);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  useEffect(() => {
-    if (localStorage.getItem('apiKey')) {
-      initGame();
-    }
-  }, []);
-
-  const addHistory = (text, type = 'response') => {
-    setHistory(prev => [...prev, { text, type }]);
-  }
-
-  const processCommand = async (command) => {
-    const [cmd, ...args] = command.toLowerCase().split(' ');
-    const argString = args.join(' ');
-
-    const commandInstance = commandRegistry.get(cmd);
-
-    if (commandInstance) {
-      setIsProcessing(true);
-      try {
-        const response = await commandInstance.execute(argString);
-        commandInstance.updateHistory(response, addHistory);
-
-        if (commandInstance.needsRefresh) {
-          const lookResponse = await import('../api/ApiService').then(api => api.look());
-          setRoom(lookResponse.data);
-          const inventoryResponse = await import('../api/ApiService').then(api => api.inventory());
-          setInventory(inventoryResponse.data.inventory);
-        }
-      } catch (error) {
-        if (error.response && error.response.data && error.response.data.detail) {
-          addHistory(error.response.data.detail);
-        } else {
-          addHistory('An error occurred.');
-        }
-      } finally {
-        setIsProcessing(false);
-      }
-    } else {
-      addHistory(`Unknown command: ${command}`);
-    }
-  };
-
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
-    setCurrentSuggestions([]); // Reset suggestions on new input
-    setSuggestionIndex(0);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      if (isProcessing) return;
-      addHistory(input, 'command');
-      processCommand(input);
-      setInput('');
-      setCurrentSuggestions([]);
-      setSuggestionIndex(0);
-    } else if (e.key === 'Tab') {
-      e.preventDefault();
-      handleTabCompletion();
-    }
-  };
-
-  const handleTabCompletion = () => {
-    console.log('handleTabCompletion');
-    const parts = input.toLowerCase().split(' ');
-    const currentWord = parts[parts.length - 1];
-    console.log('parts', parts);
-    console.log('currentWord', currentWord);
-
-    let suggestions = currentSuggestions;
-    if (suggestions.length === 0) {
-      if (parts.length === 1) {
-        const commands = commandRegistry.getAll();
-        suggestions = commands.map(c => c.name).filter(name => name.startsWith(currentWord));
-      } else {
-        const cmd = parts[0];
-        const command = commandRegistry.get(cmd);
-        if (command) {
-          const argString = parts.slice(1).join(' ');
-          console.log('argString', argString);
-          suggestions = command.getSuggestions(argString, room, inventory);
-        }
-      }
-    }
-    console.log('suggestions', suggestions);
-
-    if (suggestions.length > 0) {
-      const nextSuggestion = suggestions[suggestionIndex % suggestions.length];
-      const newParts = [...parts.slice(0, parts.length - 1), nextSuggestion];
-      setInput(newParts.join(' '));
-      setCurrentSuggestions(suggestions);
-      setSuggestionIndex(suggestionIndex + 1);
-    }
-  };
-
-
 
   const handleContainerClick = () => {
     if (inputRef.current) {

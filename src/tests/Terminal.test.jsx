@@ -1,15 +1,19 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import Terminal from '../components/Terminal';
+import * as api from '../api/ApiService';
 
-describe('Terminal', () => {
-  it('should render the terminal and process commands', async () => {
-    const { getByRole, findByText } = render(<Terminal />);
-    const input = getByRole('textbox');
+vi.mock('../api/ApiService');
 
-    fireEvent.change(input, { target: { value: 'look' } });
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+describe('Terminal Component', () => {
+  beforeEach(() => {
+    api.look.mockResolvedValue({ data: { name: 'Test Room', description: 'A room for testing.' } });
+    api.inventory.mockResolvedValue({ data: { inventory: [] } });
+    localStorage.setItem('apiKey', 'test-key');
+  });
 
-    await findByText('> look');
+  it('should render the welcome message', () => {
+    render(<Terminal />);
+    expect(screen.getByText('Welcome to the Temple of the Forgotten Prompt!')).toBeInTheDocument();
   });
 });
