@@ -68,6 +68,7 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
 
       let newIndex;
       if (commandHistoryIndex === -1) {
+        // Save current input before navigating history
         setStagedInput(input);
         newIndex = commandHistory.length - 1;
       } else {
@@ -83,6 +84,7 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
 
       let newIndex = commandHistoryIndex + 1;
       if (newIndex >= commandHistory.length) {
+        // Restore staged input when navigating past the most recent command
         setInput(stagedInput);
         newIndex = -1; // Indicate no history selected
       } else {
