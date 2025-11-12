@@ -20,7 +20,7 @@ describe('MoveCommand', () => {
     command.updateHistory(result, addHistory);
 
     expect(api.move).toHaveBeenCalledWith('north');
-    expect(addHistory).toHaveBeenCalledWith('Room: New Room');
+    expect(addHistory).toHaveBeenCalledWith('# Room: New Room');
     expect(addHistory).toHaveBeenCalledWith('A new room');
   });
 

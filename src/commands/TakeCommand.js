@@ -3,7 +3,7 @@ import * as api from '../api/ApiService';
 
 class TakeCommand extends Command {
   constructor() {
-    super('take', 'Take an item.');
+    super('take', 'Take an item.', ['t', 'get', 'grab']);
   }
 
   async execute(args) {

@@ -163,4 +163,19 @@ describe('useTerminal Hook', () => {
       });
     });
   });
+
+  it('should set isLevelComplete to true when quit command is executed', async () => {
+    const { result } = renderHook(() => useTerminal());
+
+    await act(async () => {
+      result.current.handleInputChange({ target: { value: 'quit' } });
+    });
+    await act(async () => {
+      await result.current.handleKeyDown({ key: 'Enter' });
+    });
+
+    await waitFor(() => {
+      expect(result.current.isLevelComplete).toBe(true);
+    });
+  });
 });

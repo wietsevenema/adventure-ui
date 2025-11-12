@@ -20,7 +20,7 @@ describe('LookCommand', () => {
     command.updateHistory(result, addHistory);
 
     expect(api.look).toHaveBeenCalled();
-    expect(addHistory).toHaveBeenCalledWith('Room: Test Room');
+    expect(addHistory).toHaveBeenCalledWith('# Room: Test Room');
     expect(addHistory).toHaveBeenCalledWith('A test room');
   });
 });

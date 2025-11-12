@@ -3,7 +3,7 @@ import * as api from '../api/ApiService';
 
 class InventoryCommand extends Command {
   constructor() {
-    super('inventory', 'Check your inventory.');
+    super('inventory', 'Check your inventory.', ['i', 'bag', 'items']);
   }
 
   async execute(args) {

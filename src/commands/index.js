@@ -6,6 +6,7 @@ import TakeCommand from './TakeCommand';
 import DropCommand from './DropCommand';
 import UseCommand from './UseCommand';
 import HelpCommand from './HelpCommand';
+import QuitCommand from './QuitCommand';
 
 export default [
   LookCommand,
@@ -16,4 +17,5 @@ export default [
   DropCommand,
   UseCommand,
   HelpCommand,
+  QuitCommand,
 ];

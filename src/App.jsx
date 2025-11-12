@@ -33,27 +33,29 @@ function App() {
 
   // Updated to accept levelName for the initial output
   const handleLevelSelectWithInfo = async (levelId, levelName) => {
-      try {
-        setAppState(APP_STATE.LOADING);
-        const response = await api.startLevel(levelId);
-        const { intro_text } = response.data;
+    try {
+      setAppState(APP_STATE.LOADING);
+      const response = await api.startLevel(levelId);
+      const { intro_text } = response.data;
 
-        setInitialTerminalOutput(`Welcome to ${levelName}!`);
+      const title = `${levelName}`;
+      const underline = '='.repeat(title.length);
+      setInitialTerminalOutput(`${title}\n${underline}\n-> Type 'help' to list commands\n\n`);
 
-        // Fetch initial game state
-        const lookResponse = await api.look();
-        setInitialRoom(lookResponse.data);
+      // Fetch initial game state
+      const lookResponse = await api.look();
+      setInitialRoom(lookResponse.data);
 
-        if (intro_text && intro_text.length > 0) {
-          setIntroText(intro_text);
-          setAppState(APP_STATE.INTRO);
-        } else {
-          setAppState(APP_STATE.PLAYING);
-        }
-      } catch (error) {
-        console.error("Failed to start level:", error);
-        setAppState(APP_STATE.LEVEL_SELECT);
+      if (intro_text && intro_text.length > 0) {
+        setIntroText(intro_text);
+        setAppState(APP_STATE.INTRO);
+      } else {
+        setAppState(APP_STATE.PLAYING);
       }
+    } catch (error) {
+      console.error("Failed to start level:", error);
+      setAppState(APP_STATE.LEVEL_SELECT);
+    }
   }
 
   const handleIntroComplete = () => {

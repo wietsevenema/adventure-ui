@@ -4,7 +4,7 @@ import { formatRoomOutput } from '../utils/formatting';
 
 class MoveCommand extends Command {
   constructor() {
-    super('move', 'Move to a new location.');
+    super('move', 'Move to a new location.', ['m', 'go', 'cd', 'walk']);
   }
 
   async execute(args) {

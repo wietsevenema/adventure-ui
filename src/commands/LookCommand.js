@@ -4,7 +4,7 @@ import { formatRoomOutput } from '../utils/formatting';
 
 class LookCommand extends Command {
   constructor() {
-    super('look', 'Look around the room.');
+    super('look', 'Look around the room.', ['l', 'ls', 'view', 'see']);
   }
 
   async execute(args) {

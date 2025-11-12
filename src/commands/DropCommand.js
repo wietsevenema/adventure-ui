@@ -3,7 +3,7 @@ import * as api from '../api/ApiService';
 
 class DropCommand extends Command {
   constructor() {
-    super('drop', 'Drop an item from your inventory.');
+    super('drop', 'Drop an item from your inventory.', ['d', 'discard', 'release']);
   }
 
   async execute(args) {

@@ -9,8 +9,8 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
   const [history, setHistory] = useState(() => {
     const initialHistory = initialOutput ? [initialOutput] : ["Welcome to the Temple of the Forgotten Prompt!"];
     if (initialRoom) {
-        const lines = formatRoomOutput(initialRoom.name, initialRoom.description);
-        initialHistory.push(...lines);
+      const lines = formatRoomOutput(initialRoom.name, initialRoom.description);
+      initialHistory.push(...lines);
     }
     return initialHistory.map(text => ({ text, type: 'response' }));
   });
@@ -25,7 +25,7 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
   };
 
   const processCommand = async (command) => {
-    const [cmd, ...args] = command.toLowerCase().split(' ');
+    const [cmd, ...args] = command.trim().toLowerCase().split(/\s+/);
     const argString = args.join(' ');
     const commandInstance = commandRegistry.get(cmd);
 
@@ -35,7 +35,7 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
         const response = await commandInstance.execute(argString);
         commandInstance.updateHistory(response, addHistory);
 
-        if (response.data && response.data.level_complete) {
+        if (response && response.data && response.data.level_complete) {
           setIsLevelComplete(true);
         }
       } catch (error) {
@@ -74,7 +74,7 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
         newIndex = commandHistoryIndex - 1;
       }
       if (newIndex < 0) newIndex = 0;
-      
+
       setInput(commandHistory[newIndex]);
       setCommandHistoryIndex(newIndex);
     } else if (e.key === 'ArrowDown') {

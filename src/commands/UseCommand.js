@@ -3,7 +3,7 @@ import * as api from '../api/ApiService';
 
 class UseCommand extends Command {
   constructor() {
-    super('use', 'Use an item on something.');
+    super('use', 'Use an item on something.', ['u', 'apply']);
   }
 
   async execute(args) {

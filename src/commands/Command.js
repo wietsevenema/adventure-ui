@@ -1,7 +1,8 @@
 class Command {
-  constructor(name, description) {
+  constructor(name, description, aliases = []) {
     this.name = name;
     this.description = description;
+    this.aliases = aliases;
   }
 
   execute(args) {

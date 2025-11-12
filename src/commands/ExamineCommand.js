@@ -3,7 +3,7 @@ import * as api from '../api/ApiService';
 
 class ExamineCommand extends Command {
   constructor() {
-    super('examine', 'Examine an item or feature.');
+    super('examine', 'Examine an item or feature.', ['x', 'inspect', 'check']);
   }
 
   async execute(args) {

@@ -6,6 +6,11 @@ class CommandRegistry {
     commands.forEach(Command => {
       const command = new Command();
       this.commands[command.name] = command;
+      if (command.aliases) {
+        command.aliases.forEach(alias => {
+          this.commands[alias] = command;
+        });
+      }
     });
   }
 
