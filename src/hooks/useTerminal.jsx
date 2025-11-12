@@ -16,9 +16,9 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
   });
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [room, setRoom] = useState(initialRoom);
   const [commandHistoryIndex, setCommandHistoryIndex] = useState(-1);
   const [stagedInput, setStagedInput] = useState('');
+  const [isLevelComplete, setIsLevelComplete] = useState(false);
 
   const addHistory = (text, type = 'response') => {
     setHistory(prev => [...prev, { text, type }]);
@@ -35,9 +35,8 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
         const response = await commandInstance.execute(argString);
         commandInstance.updateHistory(response, addHistory);
 
-        if (commandInstance.needsRefresh) {
-          const lookResponse = await api.look();
-          setRoom(lookResponse.data);
+        if (response.data && response.data.level_complete) {
+          setIsLevelComplete(true);
         }
       } catch (error) {
         if (error.response && error.response.data && error.response.data.detail) {
@@ -107,5 +106,6 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
     isProcessing,
     handleInputChange,
     handleKeyDown,
+    isLevelComplete,
   };
 };

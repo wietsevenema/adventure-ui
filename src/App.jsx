@@ -60,6 +60,12 @@ function App() {
     setAppState(APP_STATE.PLAYING);
   };
 
+  const handleLevelComplete = () => {
+    setAppState(APP_STATE.LEVEL_SELECT);
+    setInitialTerminalOutput(null);
+    setInitialRoom(null);
+  };
+
   let content;
   switch (appState) {
     case APP_STATE.LOADING:
@@ -76,7 +82,13 @@ function App() {
       content = <IntroScreen text={introText} onComplete={handleIntroComplete} />;
       break;
     case APP_STATE.PLAYING:
-      content = <GameScreen initialOutput={initialTerminalOutput} initialRoom={initialRoom} />;
+      content = (
+        <GameScreen
+          initialOutput={initialTerminalOutput}
+          initialRoom={initialRoom}
+          onLevelComplete={handleLevelComplete}
+        />
+      );
       break;
     default:
       content = null;

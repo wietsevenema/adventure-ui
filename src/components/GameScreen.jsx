@@ -66,13 +66,14 @@ const Input = styled.input`
   outline: none;
 `;
 
-const GameScreen = ({ initialOutput, initialRoom }) => {
+const GameScreen = ({ initialOutput, initialRoom, onLevelComplete }) => {
   const {
     history,
     input,
     isProcessing,
     handleInputChange,
     handleKeyDown,
+    isLevelComplete,
   } = useTerminal(initialOutput, initialRoom);
 
   const outputAreaRef = useRef(null);
@@ -83,6 +84,26 @@ const GameScreen = ({ initialOutput, initialRoom }) => {
       outputAreaRef.current.scrollTop = outputAreaRef.current.scrollHeight;
     }
   }, [history]);
+
+  useEffect(() => {
+    if (isLevelComplete) {
+      const handleAnyKey = () => {
+        if (onLevelComplete) onLevelComplete();
+      };
+      
+      // Small delay to prevent accidental skipping
+      const timer = setTimeout(() => {
+        window.addEventListener('keydown', handleAnyKey);
+        window.addEventListener('click', handleAnyKey);
+      }, 500);
+
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('keydown', handleAnyKey);
+        window.removeEventListener('click', handleAnyKey);
+      };
+    }
+  }, [isLevelComplete, onLevelComplete]);
 
   const handleContainerClick = () => {
     if (inputRef.current) {
@@ -97,17 +118,23 @@ const GameScreen = ({ initialOutput, initialRoom }) => {
         {history.map((line, index) => (
           <OutputLine key={index} $isCommand={line.type === 'command'}>{line.type === 'command' ? `> ${line.text}` : line.text}</OutputLine>
         ))}
-        <InputLine>
-          {!isProcessing && <Prompt>&gt;</Prompt>}
-          <Input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            autoFocus
-          />
-        </InputLine>
+        {!isLevelComplete ? (
+          <InputLine>
+            {!isProcessing && <Prompt>&gt;</Prompt>}
+            <Input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              autoFocus
+            />
+          </InputLine>
+        ) : (
+          <div style={{ marginTop: '1rem', color: '#00FF00', textAlign: 'center' }}>
+            Press any key to continue...
+          </div>
+        )}
       </OutputArea>
     </ScreenContainer>
   );

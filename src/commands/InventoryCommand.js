@@ -4,7 +4,6 @@ import * as api from '../api/ApiService';
 class InventoryCommand extends Command {
   constructor() {
     super('inventory', 'Check your inventory.');
-    this.needsRefresh = false;
   }
 
   async execute(args) {

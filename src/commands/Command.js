@@ -2,7 +2,6 @@ class Command {
   constructor(name, description) {
     this.name = name;
     this.description = description;
-    this.needsRefresh = true;
   }
 
   execute(args) {
