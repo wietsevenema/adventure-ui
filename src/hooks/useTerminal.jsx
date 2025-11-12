@@ -1,18 +1,23 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import CommandRegistry from '../commands/CommandRegistry';
 import * as api from '../api/ApiService';
+import { formatRoomOutput } from '../utils/formatting';
 
 const commandRegistry = new CommandRegistry();
 
-export const useTerminal = (initialOutput = null) => {
+export const useTerminal = (initialOutput = null, initialRoom = null, initialInventory = []) => {
   const [history, setHistory] = useState(() => {
     const initialHistory = initialOutput ? [initialOutput] : ["Welcome to the Temple of the Forgotten Prompt!"];
+    if (initialRoom) {
+        const lines = formatRoomOutput(initialRoom.name, initialRoom.description);
+        initialHistory.push(...lines);
+    }
     return initialHistory.map(text => ({ text, type: 'response' }));
   });
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [room, setRoom] = useState(null);
-  const [inventory, setInventory] = useState([]);
+  const [room, setRoom] = useState(initialRoom);
+  const [inventory, setInventory] = useState(initialInventory);
   const [commandHistoryIndex, setCommandHistoryIndex] = useState(-1);
   const [stagedInput, setStagedInput] = useState('');
   const [suggestionIndex, setSuggestionIndex] = useState(0);
@@ -132,26 +137,6 @@ export const useTerminal = (initialOutput = null) => {
       handleTabCompletion();
     }
   };
-
-  const initGame = async () => {
-    setIsProcessing(true);
-    try {
-      const lookResponse = await api.look();
-      setRoom(lookResponse.data);
-      addHistory(lookResponse.data.description);
-      const inventoryResponse = await api.inventory();
-      setInventory(inventoryResponse.data.inventory);
-    } catch (error) {
-      // Silently fail or maybe add a message to history if it's critical
-      console.error("Failed to initialize game state:", error);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  useEffect(() => {
-    initGame();
-  }, []);
 
   return {
     history,

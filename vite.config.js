@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/game': {
-          target: 'https://adventure.wietsevenema.eu',
+          target: env.API_BASE_URL || 'https://adventure.wietsevenema.eu',
           changeOrigin: true,
           configure: (proxy, _options) => {
             proxy.on('proxyReq', (proxyReq, req, _res) => {

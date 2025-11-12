@@ -42,6 +42,12 @@ API_KEY=your-api-key
 
 Replace `your-api-key` with the API key you obtained.
 
+Optionally, you can override the default API URL by setting the `API_BASE_URL` environment variable:
+
+```
+API_BASE_URL=http://localhost:8080
+```
+
 ## Running the Development Server
 
 To start the development server, run the following command:

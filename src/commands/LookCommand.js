@@ -1,5 +1,6 @@
 import Command from './Command';
 import * as api from '../api/ApiService';
+import { formatRoomOutput } from '../utils/formatting';
 
 class LookCommand extends Command {
   constructor() {
@@ -11,8 +12,8 @@ class LookCommand extends Command {
   }
 
   updateHistory(response, addHistory) {
-    addHistory(`Room: ${response.data.name}`);
-    addHistory(response.data.description);
+    const lines = formatRoomOutput(response.data.name, response.data.description);
+    lines.forEach(line => addHistory(line));
   }
 }
 

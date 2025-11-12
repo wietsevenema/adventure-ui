@@ -1,5 +1,6 @@
 import Command from './Command';
 import * as api from '../api/ApiService';
+import { formatRoomOutput } from '../utils/formatting';
 
 class MoveCommand extends Command {
   constructor() {
@@ -15,8 +16,8 @@ class MoveCommand extends Command {
       addHistory(response.data.message);
       addHistory(`Score: ${response.data.score}`);
     } else {
-      addHistory(`Room: ${response.data.name}`);
-      addHistory(response.data.description);
+      const lines = formatRoomOutput(response.data.name, response.data.description);
+      lines.forEach(line => addHistory(line));
     }
   }
 

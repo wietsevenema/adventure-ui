@@ -16,6 +16,8 @@ function App() {
   const [appState, setAppState] = useState(APP_STATE.LOADING);
   const [introText, setIntroText] = useState([]);
   const [initialTerminalOutput, setInitialTerminalOutput] = useState(null);
+  const [initialRoom, setInitialRoom] = useState(null);
+  const [initialInventory, setInitialInventory] = useState([]);
 
   useEffect(() => {
     // Check if we have an API key, if so, go to level select.
@@ -29,45 +31,6 @@ function App() {
     setAppState(APP_STATE.LEVEL_SELECT);
   }, []);
 
-  const handleLevelSelect = async (levelId) => {
-    try {
-      setAppState(APP_STATE.LOADING);
-      const response = await api.startLevel(levelId);
-      const { intro_text, level_id } = response.data;
-
-      // We might want to get the level name for the initial output.
-      // We could have passed it from LevelSelect, or fetch it again.
-      // For simplicity, let's just use the level_id or fetch it if needed.
-      // A better way is to have listLevels return it and we pass it here.
-      // Let's re-fetch the level list to get the name, or just use a placeholder.
-      // Actually, let's just use a generic welcome message + first look.
-      // The requirement said "Print the level title, and the first room description."
-      // We can get the level title from the level list if we cached it, or just fetch it.
-      // Let's try to get it from the response if possible, but it's not there.
-      // We will fetch the level list again or just rely on `look` to provide enough info if we want.
-      // Wait, `api.listLevels` returns the name. We can pass it from `LevelSelect`.
-      // Let's update `handleLevelSelect` to accept the level object or name.
-
-      // Re-reading requirement: "Print the level title, and the first room description."
-      // I'll update LevelSelect to pass the whole level object or just the name.
-      // For now, I will just set a placeholder and we can refine it.
-      // Actually, let's fetch the levels again to get the name, it's safer.
-      // Or better, pass it from LevelSelect. I will update LevelSelect next if needed,
-      // but I can just change the signature of this function in App.jsx and LevelSelect.jsx
-
-      if (intro_text && intro_text.length > 0) {
-        setIntroText(intro_text);
-        setAppState(APP_STATE.INTRO);
-      } else {
-        setAppState(APP_STATE.PLAYING);
-      }
-    } catch (error) {
-      console.error("Failed to start level:", error);
-      // Handle error, maybe go back to level select with an error message
-      setAppState(APP_STATE.LEVEL_SELECT);
-    }
-  };
-
   // Updated to accept levelName for the initial output
   const handleLevelSelectWithInfo = async (levelId, levelName) => {
       try {
@@ -76,6 +39,12 @@ function App() {
         const { intro_text } = response.data;
 
         setInitialTerminalOutput(`Welcome to ${levelName}!`);
+
+        // Fetch initial game state
+        const lookResponse = await api.look();
+        setInitialRoom(lookResponse.data);
+        const inventoryResponse = await api.inventory();
+        setInitialInventory(inventoryResponse.data.inventory);
 
         if (intro_text && intro_text.length > 0) {
           setIntroText(intro_text);
@@ -105,7 +74,7 @@ function App() {
       content = <IntroScreen text={introText} onComplete={handleIntroComplete} />;
       break;
     case APP_STATE.PLAYING:
-      content = <Terminal initialOutput={initialTerminalOutput} />;
+      content = <Terminal initialOutput={initialTerminalOutput} initialRoom={initialRoom} initialInventory={initialInventory} />;
       break;
     default:
       content = null;
