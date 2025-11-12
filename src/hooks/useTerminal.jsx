@@ -4,9 +4,9 @@ import * as api from '../api/ApiService';
 
 const commandRegistry = new CommandRegistry();
 
-export const useTerminal = () => {
+export const useTerminal = (initialOutput = null) => {
   const [history, setHistory] = useState(() => {
-    const initialHistory = ["Welcome to the Temple of the Forgotten Prompt!"];
+    const initialHistory = initialOutput ? [initialOutput] : ["Welcome to the Temple of the Forgotten Prompt!"];
     return initialHistory.map(text => ({ text, type: 'response' }));
   });
   const [input, setInput] = useState('');
@@ -138,17 +138,19 @@ export const useTerminal = () => {
     try {
       const lookResponse = await api.look();
       setRoom(lookResponse.data);
+      addHistory(lookResponse.data.description);
       const inventoryResponse = await api.inventory();
       setInventory(inventoryResponse.data.inventory);
+    } catch (error) {
+      // Silently fail or maybe add a message to history if it's critical
+      console.error("Failed to initialize game state:", error);
     } finally {
       setIsProcessing(false);
     }
   };
 
   useEffect(() => {
-    if (localStorage.getItem('apiKey')) {
-      initGame();
-    }
+    initGame();
   }, []);
 
   return {

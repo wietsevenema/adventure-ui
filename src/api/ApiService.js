@@ -16,3 +16,5 @@ export const move = (exit) => api.post('/move', { exit_name: exit });
 export const take = (itemName) => api.post('/take', { item_name: itemName });
 export const use = (directObject, indirectObject) => api.post('/use', { direct_object: directObject, indirect_object: indirectObject });
 export const drop = (itemName) => api.post('/drop', { item_name: itemName });
+export const listLevels = () => api.get('/levels');
+export const startLevel = (levelId) => api.post('/start', { level_id: levelId });

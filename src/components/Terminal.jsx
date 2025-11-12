@@ -76,14 +76,14 @@ const Input = styled.input`
   outline: none;
 `;
 
-const Terminal = () => {
+const Terminal = ({ initialOutput }) => {
   const {
     history,
     input,
     isProcessing,
     handleInputChange,
     handleKeyDown,
-  } = useTerminal();
+  } = useTerminal(initialOutput);
 
   const outputAreaRef = useRef(null);
   const inputRef = useRef(null);
