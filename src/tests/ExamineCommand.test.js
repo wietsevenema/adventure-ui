@@ -21,13 +21,4 @@ describe('ExamineCommand', () => {
     expect(api.examine).toHaveBeenCalledWith('item1');
     expect(addHistory).toHaveBeenCalledWith('A test item');
   });
-
-  it('should provide suggestions', () => {
-    const command = new ExamineCommand();
-    const room = {};
-    const inventory = ['item3'];
-
-    const suggestions = command.getSuggestions('it', room, inventory);
-    expect(suggestions).toEqual(['item3']);
-  });
 });

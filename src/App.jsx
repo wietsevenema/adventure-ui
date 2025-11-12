@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import Terminal from './components/Terminal';
+import GameScreen from './components/GameScreen';
 import TerminalWrapper from './components/TerminalWrapper';
 import LevelSelect from './components/LevelSelect';
 import IntroScreen from './components/IntroScreen';
 import * as api from './api/ApiService';
+import ScreenContainer from './components/ScreenContainer';
 
 const APP_STATE = {
   LOADING: 'LOADING',
@@ -17,7 +18,6 @@ function App() {
   const [introText, setIntroText] = useState([]);
   const [initialTerminalOutput, setInitialTerminalOutput] = useState(null);
   const [initialRoom, setInitialRoom] = useState(null);
-  const [initialInventory, setInitialInventory] = useState([]);
 
   useEffect(() => {
     // Check if we have an API key, if so, go to level select.
@@ -43,8 +43,6 @@ function App() {
         // Fetch initial game state
         const lookResponse = await api.look();
         setInitialRoom(lookResponse.data);
-        const inventoryResponse = await api.inventory();
-        setInitialInventory(inventoryResponse.data.inventory);
 
         if (intro_text && intro_text.length > 0) {
           setIntroText(intro_text);
@@ -65,7 +63,11 @@ function App() {
   let content;
   switch (appState) {
     case APP_STATE.LOADING:
-      content = <div style={{color: '#00B600', padding: '20px'}}>Loading...</div>;
+      content = (
+        <ScreenContainer>
+          Loading...
+        </ScreenContainer>
+      );
       break;
     case APP_STATE.LEVEL_SELECT:
       content = <LevelSelect onLevelSelect={handleLevelSelectWithInfo} />;
@@ -74,7 +76,7 @@ function App() {
       content = <IntroScreen text={introText} onComplete={handleIntroComplete} />;
       break;
     case APP_STATE.PLAYING:
-      content = <Terminal initialOutput={initialTerminalOutput} initialRoom={initialRoom} initialInventory={initialInventory} />;
+      content = <GameScreen initialOutput={initialTerminalOutput} initialRoom={initialRoom} />;
       break;
     default:
       content = null;

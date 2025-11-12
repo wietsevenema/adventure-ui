@@ -21,12 +21,4 @@ describe('DropCommand', () => {
     expect(api.drop).toHaveBeenCalledWith('item1');
     expect(addHistory).toHaveBeenCalledWith('You dropped the item.');
   });
-
-  it('should provide suggestions', () => {
-    const command = new DropCommand();
-    const inventory = ['item1', 'item2'];
-
-    const suggestions = command.getSuggestions('it', null, inventory);
-    expect(suggestions).toEqual(['item1', 'item2']);
-  });
 });

@@ -5,7 +5,7 @@ import { formatRoomOutput } from '../utils/formatting';
 
 const commandRegistry = new CommandRegistry();
 
-export const useTerminal = (initialOutput = null, initialRoom = null, initialInventory = []) => {
+export const useTerminal = (initialOutput = null, initialRoom = null) => {
   const [history, setHistory] = useState(() => {
     const initialHistory = initialOutput ? [initialOutput] : ["Welcome to the Temple of the Forgotten Prompt!"];
     if (initialRoom) {
@@ -17,11 +17,8 @@ export const useTerminal = (initialOutput = null, initialRoom = null, initialInv
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [room, setRoom] = useState(initialRoom);
-  const [inventory, setInventory] = useState(initialInventory);
   const [commandHistoryIndex, setCommandHistoryIndex] = useState(-1);
   const [stagedInput, setStagedInput] = useState('');
-  const [suggestionIndex, setSuggestionIndex] = useState(0);
-  const [currentSuggestions, setCurrentSuggestions] = useState([]);
 
   const addHistory = (text, type = 'response') => {
     setHistory(prev => [...prev, { text, type }]);
@@ -41,8 +38,6 @@ export const useTerminal = (initialOutput = null, initialRoom = null, initialInv
         if (commandInstance.needsRefresh) {
           const lookResponse = await api.look();
           setRoom(lookResponse.data);
-          const inventoryResponse = await api.inventory();
-          setInventory(inventoryResponse.data.inventory);
         }
       } catch (error) {
         if (error.response && error.response.data && error.response.data.detail) {
@@ -63,33 +58,6 @@ export const useTerminal = (initialOutput = null, initialRoom = null, initialInv
     setCommandHistoryIndex(-1); // Reset index on new input
     setStagedInput('');
     setInput(e.target.value);
-    setCurrentSuggestions([]);
-    setSuggestionIndex(0);
-  };
-
-  const handleTabCompletion = () => {
-    const parts = input.toLowerCase().split(' ');
-    const currentWord = parts[parts.length - 1];
-    let suggestions = currentSuggestions;
-    if (suggestions.length === 0) {
-      if (parts.length === 1) {
-        suggestions = commandRegistry.getAll().map(c => c.name).filter(name => name.startsWith(currentWord));
-      } else {
-        const cmd = parts[0];
-        const command = commandRegistry.get(cmd);
-        if (command) {
-          const argString = parts.slice(1).join(' ');
-          suggestions = command.getSuggestions(argString, room, inventory);
-        }
-      }
-    }
-    if (suggestions.length > 0) {
-      const nextSuggestion = suggestions[suggestionIndex % suggestions.length];
-      const newParts = [...parts.slice(0, parts.length - 1), nextSuggestion];
-      setInput(newParts.join(' '));
-      setCurrentSuggestions(suggestions);
-      setSuggestionIndex(suggestionIndex + 1);
-    }
   };
 
   const handleKeyDown = async (e) => {
@@ -130,11 +98,6 @@ export const useTerminal = (initialOutput = null, initialRoom = null, initialInv
       await processCommand(commandToProcess);
       setStagedInput('');
       setCommandHistoryIndex(-1); // Reset index after command submission
-      setCurrentSuggestions([]);
-      setSuggestionIndex(0);
-    } else if (e.key === 'Tab') {
-      e.preventDefault();
-      handleTabCompletion();
     }
   };
 

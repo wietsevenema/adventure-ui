@@ -21,22 +21,4 @@ describe('UseCommand', () => {
     expect(api.use).toHaveBeenCalledWith('item1', 'item2');
     expect(addHistory).toHaveBeenCalledWith('You used the item.');
   });
-
-  it('should provide suggestions for the first argument', () => {
-    const command = new UseCommand();
-    const room = {};
-    const inventory = ['item3'];
-
-    const suggestions = command.getSuggestions('it', room, inventory);
-    expect(suggestions).toEqual(['item3']);
-  });
-
-  it('should provide suggestions for the second argument', () => {
-    const command = new UseCommand();
-    const room = {};
-    const inventory = ['item3'];
-
-    const suggestions = command.getSuggestions('item3 on ', room, inventory);
-    expect(suggestions).toEqual([]);
-  });
 });

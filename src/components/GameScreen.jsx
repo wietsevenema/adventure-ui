@@ -1,17 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useTerminal } from '../hooks/useTerminal.jsx';
-
-const TerminalContainer = styled.div`
-  background-color: #000;
-  color: #00B600;
-  padding: 20px;
-  height: 100%;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-`;
+import ScreenContainer from './ScreenContainer';
 
 const flicker = keyframes`
   0% {
@@ -76,14 +66,14 @@ const Input = styled.input`
   outline: none;
 `;
 
-const Terminal = ({ initialOutput, initialRoom, initialInventory }) => {
+const GameScreen = ({ initialOutput, initialRoom }) => {
   const {
     history,
     input,
     isProcessing,
     handleInputChange,
     handleKeyDown,
-  } = useTerminal(initialOutput, initialRoom, initialInventory);
+  } = useTerminal(initialOutput, initialRoom);
 
   const outputAreaRef = useRef(null);
   const inputRef = useRef(null);
@@ -101,7 +91,7 @@ const Terminal = ({ initialOutput, initialRoom, initialInventory }) => {
   };
 
   return (
-    <TerminalContainer onClick={handleContainerClick}>
+    <ScreenContainer onClick={handleContainerClick}>
       <ScanlineEffect />
       <OutputArea ref={outputAreaRef}>
         {history.map((line, index) => (
@@ -119,8 +109,8 @@ const Terminal = ({ initialOutput, initialRoom, initialInventory }) => {
           />
         </InputLine>
       </OutputArea>
-    </TerminalContainer>
+    </ScreenContainer>
   );
 };
 
-export default Terminal;
+export default GameScreen;

@@ -42,12 +42,4 @@ describe('MoveCommand', () => {
     expect(addHistory).toHaveBeenCalledWith('You won!');
     expect(addHistory).toHaveBeenCalledWith('Score: 100');
   });
-
-  it('should provide suggestions', () => {
-    const command = new MoveCommand();
-    const room = {};
-
-    const suggestions = command.getSuggestions('n', room, []);
-    expect(suggestions).toEqual([]);
-  });
 });

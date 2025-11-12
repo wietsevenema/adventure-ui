@@ -13,10 +13,6 @@ class DropCommand extends Command {
   updateHistory(response, addHistory) {
     addHistory(response.data.message);
   }
-
-  getSuggestions(args, room, inventory) {
-    return inventory.filter(i => i.startsWith(args));
-  }
 }
 
 export default DropCommand;

@@ -9,10 +9,6 @@ class Command {
     throw new Error('Not implemented');
   }
 
-  getSuggestions(args, room, inventory) {
-    return [];
-  }
-
   updateHistory(response, addHistory) {
     addHistory(response);
   }

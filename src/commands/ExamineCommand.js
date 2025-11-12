@@ -13,11 +13,6 @@ class ExamineCommand extends Command {
   updateHistory(response, addHistory) {
     addHistory(response.data.description);
   }
-
-  getSuggestions(args, room, inventory) {
-    const allItemsAndExits = [...(room?.items || []), ...inventory, ...(room?.exits || [])];
-    return allItemsAndExits.filter(i => i.startsWith(args));
-  }
 }
 
 export default ExamineCommand;

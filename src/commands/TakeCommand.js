@@ -13,10 +13,6 @@ class TakeCommand extends Command {
   updateHistory(response, addHistory) {
     addHistory(response.data.message);
   }
-
-  getSuggestions(args, room, inventory) {
-    return (room?.items || []).filter(i => i.startsWith(args));
-  }
 }
 
 export default TakeCommand;

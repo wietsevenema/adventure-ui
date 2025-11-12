@@ -1,3 +1,4 @@
+import React from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const pulse = keyframes`
@@ -12,26 +13,34 @@ const pulse = keyframes`
   }
 `;
 
-const TerminalWrapper = styled.div`
+const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   background-color: #333;
+`;
 
-  & > div {
-    width: 100%;
-    height: 100vh;
-  }
+const TerminalFrame = styled.div`
+  width: 100%;
+  height: 100vh;
 
   @media (min-width: 800px) and (min-height: 600px) {
-    & > div {
-      width: 800px;
-      height: 600px;
-      border: 2px solid #0F0;
-      animation: ${pulse} 5s infinite;
-    }
+    width: 800px;
+    height: 600px;
+    border: 2px solid #0F0;
+    animation: ${pulse} 5s infinite;
   }
 `;
+
+const TerminalWrapper = ({ children }) => {
+  return (
+    <Wrapper>
+      <TerminalFrame>
+        {children}
+      </TerminalFrame>
+    </Wrapper>
+  );
+};
 
 export default TerminalWrapper;

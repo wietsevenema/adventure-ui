@@ -1,17 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import * as api from '../api/ApiService';
-
-const Container = styled.div`
-  background-color: #000;
-  color: #00B600;
-  padding: 20px;
-  height: 100%;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  font-family: 'Roboto Mono', monospace;
-`;
+import ScreenContainer from './ScreenContainer';
 
 const Title = styled.h1`
   color: #00FF00;
@@ -106,11 +96,11 @@ const LevelSelect = ({ onLevelSelect }) => {
     };
   }, [loading, error, levels, selectedIndex, onLevelSelect]);
 
-  if (loading) return <Container>Loading levels...</Container>;
-  if (error) return <Container>{error}</Container>;
+  if (loading) return <ScreenContainer>Loading levels...</ScreenContainer>;
+  if (error) return <ScreenContainer>{error}</ScreenContainer>;
 
   return (
-    <Container>
+    <ScreenContainer>
       <Title>SELECT LEVEL</Title>
       <LevelList>
         {levels.map((level, index) => (
@@ -130,7 +120,7 @@ const LevelSelect = ({ onLevelSelect }) => {
       <div style={{ textAlign: 'center', marginTop: '1rem' }}>
         Use UP/DOWN arrows to navigate, ENTER to select.
       </div>
-    </Container>
+    </ScreenContainer>
   );
 };
 

@@ -20,10 +20,6 @@ class MoveCommand extends Command {
       lines.forEach(line => addHistory(line));
     }
   }
-
-  getSuggestions(args, room, inventory) {
-    return (room?.exits || []).filter(e => e.startsWith(args));
-  }
 }
 
 export default MoveCommand;
