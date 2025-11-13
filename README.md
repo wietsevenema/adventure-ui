@@ -1,8 +1,8 @@
 # Adventure UI
 
-This project is a web-based user interface for [The Temple of the Forgotten Prompt](https://adventure.wietsevenema.eu/), an interactive text-based adventure game designed for both humans and AI agents. 
+This project is a web-based user interface for [The Garden of the Forgotten Prompt](https://adventure.wietsevenema.eu/), an interactive text-based adventure game designed for both humans and AI agents. 
 
-In The Temple of the Forgotten Prompt, you'll navigate ancient ruins, uncover secrets, and manipulate your environment to progress. You'll need to pay close attention to the descriptions to find clues, collect items, and figure out how to use them to overcome obstacles. 
+In The Garden of the Forgotten Prompt, you'll navigate ancient ruins, uncover secrets, and manipulate your environment to progress. You'll need to pay close attention to the descriptions to find clues, collect items, and figure out how to use them to overcome obstacles. 
 
 This UI provides a terminal-like interface for players to interact with the game world.
 

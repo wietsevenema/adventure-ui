@@ -19,7 +19,7 @@ describe('useTerminal Hook', () => {
 
   it('should initialize with a welcome message', () => {
     const { result } = renderHook(() => useTerminal());
-    expect(result.current.history[0].text).toBe('Welcome to the Temple of the Forgotten Prompt!');
+    expect(result.current.history[0].text).toBe('Welcome to the Garden of the Forgotten Prompt!');
   });
 
   it('should add a command to history on Enter', async () => {

@@ -7,7 +7,7 @@ const commandRegistry = new CommandRegistry();
 
 export const useTerminal = (initialOutput = null, initialRoom = null) => {
   const [history, setHistory] = useState(() => {
-    const initialHistory = initialOutput ? [initialOutput] : ["Welcome to the Temple of the Forgotten Prompt!"];
+    const initialHistory = initialOutput ? [initialOutput] : ["Welcome to the Garden of the Forgotten Prompt!"];
     if (initialRoom) {
       const lines = formatRoomOutput(initialRoom.name, initialRoom.description);
       initialHistory.push(...lines);

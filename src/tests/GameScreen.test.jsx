@@ -12,8 +12,8 @@ describe('GameScreen Component', () => {
     localStorage.setItem('apiKey', 'test-key');
   });
 
-  it('should render the welcome message', () => {
+  it('renders the initial welcome message', () => {
     render(<GameScreen />);
-    expect(screen.getByText('Welcome to the Temple of the Forgotten Prompt!')).toBeInTheDocument();
+    expect(screen.getByText('Welcome to the Garden of the Forgotten Prompt!')).toBeInTheDocument();
   });
 });

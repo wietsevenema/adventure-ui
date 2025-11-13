@@ -14,13 +14,13 @@ direction.
 ### 1.1. Problem & Vision Statement
 
 *   **What is the problem we are solving?**
-    *   There is a text-based adventure game API ("The Temple of the Forgotten Prompt") but no user-friendly web interface for players to interact with the game.
+    *   There is a text-based adventure game API ("The Garden of the Forgotten Prompt") but no user-friendly web interface for players to interact with the game.
 *   **Who are we solving it for?**
     *   Developers, students, or puzzle enthusiasts who enjoy a challenge and are comfortable with a command-line interface.
 *   **What is our proposed solution?**
     *   A single-page web application that presents a terminal-like interface. Users will type commands (assisted by autocomplete) which are sent to the backend API, with the results displayed in the terminal output.
 *   **What is the high-level goal?**
-    *   To create a web-based, terminal-style UI for the adventure game "The Temple of the Forgotten Prompt," complete with command auto-completion to provide a seamless and intuitive player experience.
+    *   To create a web-based, terminal-style UI for the adventure game "The Garden of the Forgotten Prompt," complete with command auto-completion to provide a seamless and intuitive player experience.
 
 ### 1.2. User Personas & Journeys
 
@@ -46,7 +46,7 @@ direction.
 
 ### 2.1. System Architecture
 
-*   A single-page web application, built with a modern frontend framework (React). It will communicate with the existing "Temple of the Forgotten Prompt" REST API via authenticated HTTP requests to manage game state.
+*   A single-page web application, built with a modern frontend framework (React). It will communicate with the existing "Garden of the Forgotten Prompt" REST API via authenticated HTTP requests to manage game state.
 
 ### 2.2. Key Technology Choices
 
