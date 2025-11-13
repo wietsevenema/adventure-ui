@@ -62,7 +62,47 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
   const handleKeyDown = async (e) => {
     const commandHistory = history.filter(line => line.type === 'command').map(line => line.text);
 
-    if (e.key === 'ArrowUp') {
+    // Ctrl+L: Clear Screen
+    if (e.ctrlKey && e.key === 'l') {
+      e.preventDefault();
+      setHistory([]);
+      return;
+    }
+
+    // Ctrl+A: Start of line
+    if (e.ctrlKey && e.key === 'a') {
+      e.preventDefault();
+      e.target.setSelectionRange(0, 0);
+      return;
+    }
+
+    // Ctrl+E: End of line
+    if (e.ctrlKey && e.key === 'e') {
+      e.preventDefault();
+      e.target.setSelectionRange(input.length, input.length);
+      return;
+    }
+
+    // Ctrl+K: Kill to end
+    if (e.ctrlKey && e.key === 'k') {
+      e.preventDefault();
+      const cursor = e.target.selectionStart;
+      setInput(input.slice(0, cursor));
+      return;
+    }
+
+    // Ctrl+U: Kill to start
+    if (e.ctrlKey && e.key === 'u') {
+      e.preventDefault();
+      const cursor = e.target.selectionStart;
+      setInput(input.slice(cursor));
+      setTimeout(() => {
+        if (e.target) e.target.setSelectionRange(0, 0);
+      }, 0);
+      return;
+    }
+
+    if (e.key === 'ArrowUp' || (e.ctrlKey && e.key === 'p')) {
       e.preventDefault();
       if (commandHistory.length === 0) return;
 
@@ -78,7 +118,11 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
 
       setInput(commandHistory[newIndex]);
       setCommandHistoryIndex(newIndex);
-    } else if (e.key === 'ArrowDown') {
+
+      setTimeout(() => {
+        if (e.target) e.target.setSelectionRange(e.target.value.length, e.target.value.length);
+      }, 0);
+    } else if (e.key === 'ArrowDown' || (e.ctrlKey && e.key === 'n')) {
       e.preventDefault();
       if (commandHistory.length === 0 || commandHistoryIndex === -1) return;
 
@@ -91,6 +135,10 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
         setInput(commandHistory[newIndex]);
       }
       setCommandHistoryIndex(newIndex);
+
+      setTimeout(() => {
+        if (e.target) e.target.setSelectionRange(e.target.value.length, e.target.value.length);
+      }, 0);
     } else if (e.key === 'Enter') {
       if (isProcessing || input.trim() === '') return;
       addHistory(input, 'command');

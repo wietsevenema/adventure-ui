@@ -64,30 +64,30 @@ describe('useTerminal Hook', () => {
       await waitFor(() => expect(result.current.history.filter(h => h.type === 'command').length).toBe(2));
 
       // Navigate up
-      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowUp', preventDefault: () => {} }); });
+      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowUp', preventDefault: () => {}, target: { value: 'command 2', setSelectionRange: vi.fn() } }); });
       await waitFor(() => {
         expect(result.current.input).toBe('command 2');
       });
 
-      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowUp', preventDefault: () => {} }); });
+      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowUp', preventDefault: () => {}, target: { value: 'command 1', setSelectionRange: vi.fn() } }); });
       await waitFor(() => {
         expect(result.current.input).toBe('command 1');
       });
 
       // Stays at the top
-      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowUp', preventDefault: () => {} }); });
+      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowUp', preventDefault: () => {}, target: { value: 'command 1', setSelectionRange: vi.fn() } }); });
       await waitFor(() => {
         expect(result.current.input).toBe('command 1');
       });
 
       // Navigate down
-      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowDown', preventDefault: () => {} }); });
+      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowDown', preventDefault: () => {}, target: { value: 'command 2', setSelectionRange: vi.fn() } }); });
       await waitFor(() => {
         expect(result.current.input).toBe('command 2');
       });
 
       // Navigate down to empty input
-      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowDown', preventDefault: () => {} }); });
+      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowDown', preventDefault: () => {}, target: { value: '', setSelectionRange: vi.fn() } }); });
       await waitFor(() => {
         expect(result.current.input).toBe('');
       });
@@ -112,13 +112,13 @@ describe('useTerminal Hook', () => {
       await waitFor(() => expect(result.current.input).toBe('new input'));
 
       // Navigate up into history
-      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowUp', preventDefault: () => {} }); });
+      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowUp', preventDefault: () => {}, target: { value: 'command 1', setSelectionRange: vi.fn() } }); });
       await waitFor(() => {
         expect(result.current.input).toBe('command 1');
       });
 
       // Navigate back down
-      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowDown', preventDefault: () => {} }); });
+      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowDown', preventDefault: () => {}, target: { value: 'new input', setSelectionRange: vi.fn() } }); });
       await waitFor(() => {
         expect(result.current.input).toBe('new input');
       });
@@ -143,7 +143,7 @@ describe('useTerminal Hook', () => {
       await waitFor(() => expect(result.current.history.filter(h => h.type === 'command').length).toBe(2));
 
       // Navigate up
-      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowUp', preventDefault: () => {} }); });
+      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowUp', preventDefault: () => {}, target: { value: 'command 2', setSelectionRange: vi.fn() } }); });
       await waitFor(() => {
         expect(result.current.input).toBe('command 2');
       });
@@ -157,10 +157,158 @@ describe('useTerminal Hook', () => {
       });
       
       // Navigate up again, should start from the end (command 2)
-      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowUp', preventDefault: () => {} }); });
+      await act(async () => { await result.current.handleKeyDown({ key: 'ArrowUp', preventDefault: () => {}, target: { value: 'command 2', setSelectionRange: vi.fn() } }); });
       await waitFor(() => {
         expect(result.current.input).toBe('command 2');
       });
+    });
+  });
+
+  describe('Terminal Shortcuts', () => {
+    it('Ctrl+L should clear history', async () => {
+      const { result } = renderHook(() => useTerminal());
+      
+      // Add some history
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'test' } });
+      });
+      await act(async () => {
+        await result.current.handleKeyDown({ key: 'Enter' });
+      });
+      
+      expect(result.current.history.length).toBeGreaterThan(0);
+
+      // Ctrl+L
+      await act(async () => {
+        await result.current.handleKeyDown({ ctrlKey: true, key: 'l', preventDefault: vi.fn() });
+      });
+
+      expect(result.current.history.length).toBe(0);
+    });
+
+    it('Ctrl+A should move cursor to start', async () => {
+      const { result } = renderHook(() => useTerminal());
+      const setSelectionRange = vi.fn();
+      
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'hello' } });
+      });
+
+      await act(async () => {
+        await result.current.handleKeyDown({ 
+          ctrlKey: true, 
+          key: 'a', 
+          preventDefault: vi.fn(),
+          target: { setSelectionRange }
+        });
+      });
+
+      expect(setSelectionRange).toHaveBeenCalledWith(0, 0);
+    });
+
+    it('Ctrl+E should move cursor to end', async () => {
+      const { result } = renderHook(() => useTerminal());
+      const setSelectionRange = vi.fn();
+      
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'hello' } });
+      });
+
+      await act(async () => {
+        await result.current.handleKeyDown({ 
+          ctrlKey: true, 
+          key: 'e', 
+          preventDefault: vi.fn(),
+          target: { setSelectionRange }
+        });
+      });
+
+      expect(setSelectionRange).toHaveBeenCalledWith(5, 5);
+    });
+
+    it('Ctrl+K should kill to end', async () => {
+      const { result } = renderHook(() => useTerminal());
+      
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'hello world' } });
+      });
+
+      await act(async () => {
+        await result.current.handleKeyDown({ 
+          ctrlKey: true, 
+          key: 'k', 
+          preventDefault: vi.fn(),
+          target: { selectionStart: 5 }
+        });
+      });
+
+      expect(result.current.input).toBe('hello');
+    });
+
+    it('Ctrl+U should kill to start', async () => {
+      const { result } = renderHook(() => useTerminal());
+      const setSelectionRange = vi.fn();
+      
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'hello world' } });
+      });
+
+      await act(async () => {
+        await result.current.handleKeyDown({ 
+          ctrlKey: true, 
+          key: 'u', 
+          preventDefault: vi.fn(),
+          target: { selectionStart: 6, setSelectionRange }
+        });
+      });
+
+      expect(result.current.input).toBe('world');
+      
+      // Wait for setTimeout
+      await waitFor(() => {
+        expect(setSelectionRange).toHaveBeenCalledWith(0, 0);
+      });
+    });
+
+    it('Ctrl+P/N should navigate history', async () => {
+      const { result } = renderHook(() => useTerminal());
+      const setSelectionRange = vi.fn();
+
+      // Add history
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'cmd1' } });
+      });
+      await act(async () => {
+        await result.current.handleKeyDown({ key: 'Enter' });
+      });
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'cmd2' } });
+      });
+      await act(async () => {
+        await result.current.handleKeyDown({ key: 'Enter' });
+      });
+
+      // Ctrl+P (Up)
+      await act(async () => {
+        await result.current.handleKeyDown({ 
+          ctrlKey: true, 
+          key: 'p', 
+          preventDefault: vi.fn(),
+          target: { value: 'cmd2', setSelectionRange }
+        });
+      });
+      expect(result.current.input).toBe('cmd2');
+
+      // Ctrl+N (Down)
+      await act(async () => {
+        await result.current.handleKeyDown({ 
+          ctrlKey: true, 
+          key: 'n', 
+          preventDefault: vi.fn(),
+          target: { value: 'cmd2', setSelectionRange }
+        });
+      });
+      expect(result.current.input).toBe('');
     });
   });
 
