@@ -17,5 +17,14 @@ describe('HelpCommand', () => {
     expect(addHistory).toHaveBeenCalledWith('  drop <item> (d, discard, release) - Drop an item from your inventory.');
     expect(addHistory).toHaveBeenCalledWith('  quit (q, exit, :q!) - Quit the level.');
     expect(addHistory).toHaveBeenCalledWith('  help (h, ?, man, info) - Show a list of commands.');
+    expect(addHistory).toHaveBeenCalledWith('');
+    expect(addHistory).toHaveBeenCalledWith('Keyboard shortcuts:');
+    expect(addHistory).toHaveBeenCalledWith('  Ctrl+L - Clear screen');
+    expect(addHistory).toHaveBeenCalledWith('  Ctrl+A - Start of line');
+    expect(addHistory).toHaveBeenCalledWith('  Ctrl+E - End of line');
+    expect(addHistory).toHaveBeenCalledWith('  Ctrl+K - Delete to end of line');
+    expect(addHistory).toHaveBeenCalledWith('  Ctrl+U - Delete to start of line');
+    expect(addHistory).toHaveBeenCalledWith('  Ctrl+P / Up - Previous command');
+    expect(addHistory).toHaveBeenCalledWith('  Ctrl+N / Down - Next command');
   });
 });

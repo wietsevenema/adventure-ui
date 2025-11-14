@@ -14,6 +14,7 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
     }
     return initialHistory.map(text => ({ text, type: 'response' }));
   });
+  const [commandHistory, setCommandHistory] = useState([]);
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [commandHistoryIndex, setCommandHistoryIndex] = useState(-1);
@@ -60,8 +61,6 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
   };
 
   const handleKeyDown = async (e) => {
-    const commandHistory = history.filter(line => line.type === 'command').map(line => line.text);
-
     // Ctrl+L: Clear Screen
     if (e.ctrlKey && e.key === 'l') {
       e.preventDefault();
@@ -142,6 +141,7 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
     } else if (e.key === 'Enter') {
       if (isProcessing || input.trim() === '') return;
       addHistory(input, 'command');
+      setCommandHistory(prev => [...prev, input]);
       const commandToProcess = input;
       setInput('');
       await processCommand(commandToProcess);

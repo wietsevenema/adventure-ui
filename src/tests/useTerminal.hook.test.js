@@ -186,6 +186,36 @@ describe('useTerminal Hook', () => {
       expect(result.current.history.length).toBe(0);
     });
 
+    it('Ctrl+L should NOT clear command history (navigation)', async () => {
+      const { result } = renderHook(() => useTerminal());
+
+      // Enter a command
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'saved command' } });
+      });
+      await act(async () => {
+        await result.current.handleKeyDown({ key: 'Enter' });
+      });
+
+      // Clear screen
+      await act(async () => {
+        await result.current.handleKeyDown({ ctrlKey: true, key: 'l', preventDefault: vi.fn() });
+      });
+
+      expect(result.current.history.length).toBe(0);
+
+      // Try to navigate back to the command
+      await act(async () => {
+        await result.current.handleKeyDown({ 
+          key: 'ArrowUp', 
+          preventDefault: vi.fn(),
+          target: { value: '', setSelectionRange: vi.fn() } 
+        });
+      });
+
+      expect(result.current.input).toBe('saved command');
+    });
+
     it('Ctrl+A should move cursor to start', async () => {
       const { result } = renderHook(() => useTerminal());
       const setSelectionRange = vi.fn();

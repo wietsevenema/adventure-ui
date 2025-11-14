@@ -21,6 +21,15 @@ class HelpCommand extends Command {
     addHistory('  drop <item> (d, discard, release) - Drop an item from your inventory.');
     addHistory('  quit (q, exit, :q!) - Quit the level.');
     addHistory('  help (h, ?, man, info) - Show a list of commands.');
+    addHistory('');
+    addHistory('Keyboard shortcuts:');
+    addHistory('  Ctrl+L - Clear screen');
+    addHistory('  Ctrl+A - Start of line');
+    addHistory('  Ctrl+E - End of line');
+    addHistory('  Ctrl+K - Delete to end of line');
+    addHistory('  Ctrl+U - Delete to start of line');
+    addHistory('  Ctrl+P / Up - Previous command');
+    addHistory('  Ctrl+N / Down - Next command');
   }
 }
 
