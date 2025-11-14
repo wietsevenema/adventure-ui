@@ -66,7 +66,7 @@ const Input = styled.input`
   outline: none;
 `;
 
-const GameScreen = ({ initialOutput, initialRoom, onLevelComplete }) => {
+const GameScreen = ({ initialOutput, initialRoom, onLevelComplete, sessionId }) => {
   const {
     history,
     input,
@@ -74,7 +74,7 @@ const GameScreen = ({ initialOutput, initialRoom, onLevelComplete }) => {
     handleInputChange,
     handleKeyDown,
     isLevelComplete,
-  } = useTerminal(initialOutput, initialRoom);
+  } = useTerminal(initialOutput, initialRoom, sessionId);
 
   const outputAreaRef = useRef(null);
   const inputRef = useRef(null);

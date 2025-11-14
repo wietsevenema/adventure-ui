@@ -18,3 +18,4 @@ export const use = (directObject, indirectObject) => api.post('/use', { direct_o
 export const drop = (itemName) => api.post('/drop', { item_name: itemName });
 export const listLevels = () => api.get('/levels');
 export const startLevel = (levelId) => api.post('/start', { level_id: levelId });
+export const logSession = (sessionId, logs) => api.post('/log', { session_id: sessionId, logs });

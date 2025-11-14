@@ -342,6 +342,212 @@ describe('useTerminal Hook', () => {
     });
   });
 
+  describe('Session Logging', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      api.logSession.mockResolvedValue({});
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('should NOT log if sessionId is missing', async () => {
+      const { result } = renderHook(() => useTerminal(null, null, null));
+
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'test' } });
+        await result.current.handleKeyDown({ key: 'Enter' });
+      });
+
+      // Fast forward time
+      await act(async () => {
+        vi.advanceTimersByTime(6000);
+      });
+
+      expect(api.logSession).not.toHaveBeenCalled();
+    });
+
+    it('should buffer input and output logs', async () => {
+      const sessionId = 'session-123';
+      const { result } = renderHook(() => useTerminal(null, null, sessionId));
+
+      // Input command
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'look' } });
+      });
+      await act(async () => {
+        await result.current.handleKeyDown({ key: 'Enter' });
+      });
+
+      // Fast forward to trigger flush
+      await act(async () => {
+        vi.advanceTimersByTime(5000);
+      });
+
+      expect(api.logSession).toHaveBeenCalledTimes(1);
+      const [callSessionId, logs] = api.logSession.mock.calls[0];
+      expect(callSessionId).toBe(sessionId);
+      
+      // Expect 2 logs: 1 input ('look'), 1 output (response from api.look mock)
+      expect(logs.length).toBeGreaterThanOrEqual(2);
+      
+      const inputLog = logs.find(l => l.type === 'in');
+      expect(inputLog).toBeDefined();
+      expect(inputLog.val).toBe('look');
+      expect(inputLog.client).toBe('web');
+      expect(inputLog.t).toBeGreaterThanOrEqual(0);
+
+      const outputLog = logs.find(l => l.type === 'out');
+      expect(outputLog).toBeDefined();
+      expect(outputLog.client).toBe('web');
+    });
+
+    it('should flush logs periodically and clear buffer', async () => {
+      const sessionId = 'session-123';
+      const { result } = renderHook(() => useTerminal(null, null, sessionId));
+
+      // First command
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'cmd1' } });
+      });
+      await act(async () => {
+        await result.current.handleKeyDown({ key: 'Enter' });
+      });
+
+      // Flush 1
+      await act(async () => {
+        vi.advanceTimersByTime(5000);
+      });
+      expect(api.logSession).toHaveBeenCalledTimes(1);
+      expect(api.logSession.mock.calls[0][1].some(l => l.val === 'cmd1')).toBe(true);
+
+      // Second command
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'cmd2' } });
+      });
+      await act(async () => {
+        await result.current.handleKeyDown({ key: 'Enter' });
+      });
+
+      // Flush 2
+      await act(async () => {
+        vi.advanceTimersByTime(5000);
+      });
+      expect(api.logSession).toHaveBeenCalledTimes(2);
+      // Second flush should NOT contain cmd1
+      expect(api.logSession.mock.calls[1][1].some(l => l.val === 'cmd1')).toBe(false);
+      expect(api.logSession.mock.calls[1][1].some(l => l.val === 'cmd2')).toBe(true);
+    });
+
+    it('should NOT call API if buffer is empty', async () => {
+      const sessionId = 'session-123';
+      renderHook(() => useTerminal(null, null, sessionId));
+
+      await act(async () => {
+        vi.advanceTimersByTime(5000);
+      });
+
+      expect(api.logSession).not.toHaveBeenCalled();
+    });
+
+    it('should skip flush if previous flush is in progress', async () => {
+      const sessionId = 'session-123';
+      let resolveFlush;
+      api.logSession.mockImplementation(() => new Promise(resolve => { resolveFlush = resolve; }));
+
+      const { result } = renderHook(() => useTerminal(null, null, sessionId));
+
+      // Add log
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'cmd1' } });
+      });
+      await act(async () => {
+        await result.current.handleKeyDown({ key: 'Enter' });
+      });
+
+      // Trigger first flush (starts but hangs)
+      await act(async () => {
+        vi.advanceTimersByTime(5000);
+      });
+      expect(api.logSession).toHaveBeenCalledTimes(1);
+
+      // Add another log
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'cmd2' } });
+      });
+      await act(async () => {
+        await result.current.handleKeyDown({ key: 'Enter' });
+      });
+
+      // Trigger second flush (should be skipped)
+      await act(async () => {
+        vi.advanceTimersByTime(5000);
+      });
+      expect(api.logSession).toHaveBeenCalledTimes(1);
+
+      // Resolve the first flush
+      await act(async () => {
+        resolveFlush({});
+      });
+
+      // Trigger third flush (should now proceed with cmd2)
+      await act(async () => {
+        vi.advanceTimersByTime(5000);
+      });
+      expect(api.logSession).toHaveBeenCalledTimes(2);
+      expect(api.logSession.mock.calls[1][1].some(l => l.val === 'cmd2')).toBe(true);
+    });
+
+    it('should re-queue logs if API call fails', async () => {
+      const sessionId = 'session-123';
+      // First call fails, second succeeds
+      api.logSession
+        .mockRejectedValueOnce(new Error('Network Error'))
+        .mockResolvedValueOnce({});
+
+      const { result } = renderHook(() => useTerminal(null, null, sessionId));
+
+      // Add log
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'cmd1' } });
+      });
+      await act(async () => {
+        await result.current.handleKeyDown({ key: 'Enter' });
+      });
+
+      // Trigger flush (fails)
+      await act(async () => {
+        vi.advanceTimersByTime(5000);
+      });
+      expect(api.logSession).toHaveBeenCalledTimes(1);
+
+      // Trigger next flush (should retry cmd1)
+      await act(async () => {
+        vi.advanceTimersByTime(5000);
+      });
+      expect(api.logSession).toHaveBeenCalledTimes(2);
+      expect(api.logSession.mock.calls[1][1].some(l => l.val === 'cmd1')).toBe(true);
+    });
+
+    it('should flush logs on unmount', async () => {
+      const sessionId = 'session-123';
+      const { result, unmount } = renderHook(() => useTerminal(null, null, sessionId));
+
+      await act(async () => {
+        result.current.handleInputChange({ target: { value: 'cmd1' } });
+      });
+      await act(async () => {
+        await result.current.handleKeyDown({ key: 'Enter' });
+      });
+
+      unmount();
+
+      expect(api.logSession).toHaveBeenCalledTimes(1);
+      expect(api.logSession.mock.calls[0][1].some(l => l.val === 'cmd1')).toBe(true);
+    });
+  });
+
   it('should set isLevelComplete to true when quit command is executed', async () => {
     const { result } = renderHook(() => useTerminal());
 

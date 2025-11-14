@@ -18,6 +18,7 @@ function App() {
   const [introText, setIntroText] = useState([]);
   const [initialTerminalOutput, setInitialTerminalOutput] = useState(null);
   const [initialRoom, setInitialRoom] = useState(null);
+  const [sessionId, setSessionId] = useState(null);
 
   useEffect(() => {
     // Check if we have an API key, if so, go to level select.
@@ -36,7 +37,8 @@ function App() {
     try {
       setAppState(APP_STATE.LOADING);
       const response = await api.startLevel(levelId);
-      const { intro_text } = response.data;
+      const { intro_text, id } = response.data;
+      setSessionId(id);
 
       const title = `${levelName}`;
       const underline = '='.repeat(title.length);
@@ -66,6 +68,7 @@ function App() {
     setAppState(APP_STATE.LEVEL_SELECT);
     setInitialTerminalOutput(null);
     setInitialRoom(null);
+    setSessionId(null);
   };
 
   let content;
@@ -89,6 +92,7 @@ function App() {
           initialOutput={initialTerminalOutput}
           initialRoom={initialRoom}
           onLevelComplete={handleLevelComplete}
+          sessionId={sessionId}
         />
       );
       break;

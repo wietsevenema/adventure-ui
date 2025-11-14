@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import CommandRegistry from '../commands/CommandRegistry';
 import * as api from '../api/ApiService';
 import { formatRoomOutput } from '../utils/formatting';
 
 const commandRegistry = new CommandRegistry();
 
-export const useTerminal = (initialOutput = null, initialRoom = null) => {
+export const useTerminal = (initialOutput = null, initialRoom = null, sessionId = null) => {
   const [history, setHistory] = useState(() => {
     const initialHistory = initialOutput ? [initialOutput] : ["Welcome to the Garden of the Forgotten Prompt!"];
     if (initialRoom) {
@@ -21,11 +21,59 @@ export const useTerminal = (initialOutput = null, initialRoom = null) => {
   const [stagedInput, setStagedInput] = useState('');
   const [isLevelComplete, setIsLevelComplete] = useState(false);
 
+  // Logging refs
+  const logBuffer = useRef([]);
+  const isFlushing = useRef(false);
+  const startTime = useRef(Date.now());
+
+  const flushLogs = async () => {
+    if (!sessionId || isFlushing.current || logBuffer.current.length === 0) return;
+
+    isFlushing.current = true;
+    const batchToSend = [...logBuffer.current];
+    logBuffer.current = [];
+
+    try {
+      await api.logSession(sessionId, batchToSend);
+    } catch (error) {
+      console.warn('Failed to flush logs, requeuing...', error);
+      // Re-queue failed logs at the beginning
+      logBuffer.current = [...batchToSend, ...logBuffer.current];
+    } finally {
+      isFlushing.current = false;
+    }
+  };
+
+  useEffect(() => {
+    if (!sessionId) return;
+
+    // Reset start time when session starts
+    startTime.current = Date.now();
+    logBuffer.current = [];
+
+    const intervalId = setInterval(flushLogs, 5000);
+
+    return () => {
+      clearInterval(intervalId);
+      flushLogs(); // Try to flush one last time
+    };
+  }, [sessionId]);
+
+  const logEntry = (type, val) => {
+    if (!sessionId) return;
+    const t = Date.now() - startTime.current;
+    logBuffer.current.push({ t, type, val, client: 'web' });
+  };
+
   const addHistory = (text, type = 'response') => {
     setHistory(prev => [...prev, { text, type }]);
+    if (type === 'response') {
+      logEntry('out', text);
+    }
   };
 
   const processCommand = async (command) => {
+    logEntry('in', command);
     const [cmd, ...args] = command.trim().toLowerCase().split(/\s+/);
     const argString = args.join(' ');
     const commandInstance = commandRegistry.get(cmd);
